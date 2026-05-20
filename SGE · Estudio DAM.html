@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SGE · Estudio DAM</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #181c27;
+  --surface2: #1f2436;
+  --border: #2c3354;
+  --accent: #5b8dee;
+  --accent-dim: rgba(91,141,238,0.15);
+  --gold: #f0b429;
+  --gold-dim: rgba(240,180,41,0.15);
+  --danger: #e05c5c;
+  --danger-dim: rgba(224,92,92,0.15);
+  --success: #42c78a;
+  --success-dim: rgba(66,199,138,0.15);
+  --text: #e4e8f5;
+  --muted: #5a6380;
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ══════════════ HOME ══════════════ */
+#home{padding:28px 18px 32px;background:linear-gradient(170deg,#0f1117 0%,#141929 100%);position:relative;overflow:hidden}
+#home::before{content:'';position:absolute;top:-80px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(91,141,238,.13) 0%,transparent 70%);pointer-events:none}
+.home-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
+.home-title{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-0.5px;margin-bottom:6px}
+.home-title span{color:var(--accent)}
+.home-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+
+/* global progress */
+.global-bar-wrap{background:var(--surface);border-radius:var(--radius);padding:16px;margin-bottom:20px;border:1px solid var(--border)}
+.global-bar-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px}
+.global-bar-top strong{color:var(--text)}
+.global-bar-top span{color:var(--muted)}
+.bar-track{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#8fb6ff);border-radius:99px;transition:width .5s ease}
+.global-stats{display:flex;gap:8px;margin-top:12px}
+.gstat{flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 8px;text-align:center}
+.gstat-val{font-size:18px;font-weight:800}
+.gstat-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* blocks */
+.section-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:20px 0 10px}
+.blocks-list{display:flex;flex-direction:column;gap:10px}
+.block-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background .15s,transform .1s;position:relative;overflow:hidden}
+.block-card:active{transform:scale(.98)}
+.block-card.completed{border-color:rgba(66,199,138,.35)}
+.block-card.active-block{border-color:var(--accent);background:var(--accent-dim)}
+.block-num{width:40px;height:40px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.block-card.completed .block-num{background:var(--success-dim);color:var(--success)}
+.block-card.active-block .block-num{background:var(--accent-dim);color:var(--accent)}
+.block-info{flex:1;min-width:0}
+.block-name{font-weight:700;font-size:14px;margin-bottom:2px}
+.block-meta{font-size:12px;color:var(--muted)}
+.block-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;flex-shrink:0}
+.badge-done{background:var(--success-dim);color:var(--success)}
+.badge-pct{background:var(--accent-dim);color:var(--accent)}
+.badge-lock{background:var(--surface2);color:var(--muted)}
+.block-mini-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);border-radius:0 0 0 var(--radius);transition:width .4s}
+
+/* failed repo button */
+.repo-btn{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:background .15s;margin-top:4px}
+.repo-btn:active{background:var(--surface2)}
+.repo-icon{width:40px;height:40px;border-radius:10px;background:var(--danger-dim);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.repo-info{flex:1}
+.repo-name{font-weight:700;font-size:14px;margin-bottom:2px}
+.repo-meta{font-size:12px;color:var(--muted)}
+.repo-count{font-size:18px;font-weight:800;color:var(--danger)}
+
+/* ══════════════ QUIZ ══════════════ */
+#quiz{padding:0;background:var(--bg)}
+.quiz-header{padding:14px 16px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;position:sticky;top:0;z-index:10}
+.quiz-header-row{display:flex;justify-content:space-between;align-items:center}
+.quiz-back{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px}
+.quiz-title{font-size:13px;font-weight:700;color:var(--text)}
+.quiz-score-badge{font-size:12px;font-weight:700;color:var(--success);background:var(--success-dim);padding:3px 10px;border-radius:99px}
+.quiz-progress-row{display:flex;align-items:center;gap:10px}
+.quiz-prog-text{font-size:11px;color:var(--muted);white-space:nowrap}
+.quiz-bar-track{flex:1;height:6px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.quiz-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#8fb6ff);border-radius:99px;transition:width .3s}
+
+.quiz-body{padding:18px 16px;flex:1;overflow-y:auto}
+.question-text{font-size:17px;font-weight:700;line-height:1.45;margin-bottom:20px}
+.options-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.opt-btn{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 14px;cursor:pointer;text-align:left;transition:background .12s,border-color .12s;width:100%}
+.opt-btn.pre-selected{border-color:var(--accent);background:var(--accent-dim)}
+.opt-btn.correct{border-color:var(--success)!important;background:var(--success-dim)!important}
+.opt-btn.incorrect{border-color:var(--danger)!important;background:var(--danger-dim)!important}
+.opt-btn:disabled{cursor:default}
+.opt-num{width:28px;height:28px;border-radius:7px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:var(--muted)}
+.opt-btn.pre-selected .opt-num{background:var(--accent);color:#fff}
+.opt-btn.correct .opt-num{background:var(--success);color:#fff}
+.opt-btn.incorrect .opt-num{background:var(--danger);color:#fff}
+.opt-text{font-size:14px;line-height:1.4;color:var(--text)}
+
+/* explanation */
+.explanation{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:14px;margin-bottom:20px;display:none}
+.explanation.show{display:block}
+.expl-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
+.expl-text{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* quiz footer */
+.quiz-footer{padding:12px 16px;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;position:sticky;bottom:0}
+.next-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:none;transition:opacity .15s}
+.next-btn:active{opacity:.8}
+.fail-action{display:none;flex-direction:column;gap:8px}
+.fail-action.show{display:flex}
+.fail-result{font-size:13px;color:var(--danger);font-weight:700;text-align:center}
+.mark-fail-btn{width:100%;padding:11px;background:var(--danger-dim);border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);font-size:13px;font-weight:700;cursor:pointer;transition:background .12s}
+.mark-fail-btn:active{background:rgba(224,92,92,.3)}
+.mark-fail-btn.marked{background:rgba(224,92,92,.25);border-color:var(--danger)}
+
+/* ══════════════ BLOCK COMPLETE ══════════════ */
+#block-complete{padding:40px 20px;justify-content:center;align-items:center;text-align:center;background:var(--bg)}
+.bc-emoji{font-size:56px;margin-bottom:16px}
+.bc-title{font-size:26px;font-weight:800;margin-bottom:8px}
+.bc-sub{font-size:14px;color:var(--muted);margin-bottom:32px;line-height:1.6}
+.bc-score{font-size:48px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.bc-score-label{font-size:13px;color:var(--muted);margin-bottom:32px}
+.bc-btns{display:flex;flex-direction:column;gap:12px;width:100%}
+.bc-btn{padding:15px;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s}
+.bc-btn:active{opacity:.8}
+.bc-btn-primary{background:var(--accent);color:#fff}
+.bc-btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+
+/* ══════════════ REPO ══════════════ */
+#repo{padding:0;background:var(--bg)}
+.repo-header{padding:16px 16px 14px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.repo-header-left{display:flex;align-items:center;gap:10px}
+.repo-back{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0}
+.repo-htitle{font-size:16px;font-weight:800}
+.repo-hbadge{font-size:12px;color:var(--danger);background:var(--danger-dim);padding:3px 10px;border-radius:99px;font-weight:700}
+.repo-body{padding:16px;flex:1;overflow-y:auto}
+.repo-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.repo-empty-icon{font-size:48px;margin-bottom:12px}
+.repo-empty-text{font-size:14px;line-height:1.6}
+.repo-section-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 12px}
+.fail-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.fail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative}
+.fail-card.resolved{border-color:rgba(66,199,138,.3);opacity:.6}
+.fail-card-q{font-size:13px;font-weight:700;line-height:1.4;margin-bottom:8px;padding-right:32px}
+.fail-card-answer{font-size:12px;color:var(--success);background:var(--success-dim);padding:4px 10px;border-radius:99px;display:inline-block;margin-bottom:8px}
+.fail-card-expl{font-size:12px;color:var(--muted);line-height:1.5;border-top:1px solid var(--border);padding-top:8px;margin-top:4px}
+.fail-card-actions{display:flex;gap:8px;margin-top:10px}
+.fc-btn{flex:1;padding:9px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s}
+.fc-btn:active{opacity:.7}
+.fc-btn-resolve{background:var(--success-dim);color:var(--success);border:1px solid rgba(66,199,138,.4)}
+.fc-btn-resolved{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.fc-btn-delete{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(224,92,92,.3)}
+.fail-card-num{position:absolute;top:10px;right:12px;font-size:10px;color:var(--muted);font-weight:700}
+.repo-clear-btn{width:100%;padding:13px;background:var(--surface);border:1px solid rgba(224,92,92,.4);border-radius:var(--radius);color:var(--danger);font-size:13px;font-weight:700;cursor:pointer;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HOME ══════════ -->
+<div id="home" class="screen active">
+  <div class="home-label">DAM · SGE</div>
+  <h1 class="home-title">Sistemas de Gestión<br><span>Empresarial</span></h1>
+  <p class="home-sub">107 preguntas · Bloques de 25 · Progreso guardado</p>
+
+  <div class="global-bar-wrap">
+    <div class="global-bar-top">
+      <strong id="global-done-text">0 de 107 respondidas</strong>
+      <span id="global-pct-text">0%</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="global-bar" style="width:0%"></div></div>
+    <div class="global-stats">
+      <div class="gstat"><div class="gstat-val" id="gs-correct" style="color:var(--success)">0</div><div class="gstat-lbl">Correctas</div></div>
+      <div class="gstat"><div class="gstat-val" id="gs-fail" style="color:var(--danger)">0</div><div class="gstat-lbl">Falladas</div></div>
+      <div class="gstat"><div class="gstat-val" id="gs-repo" style="color:var(--gold)">0</div><div class="gstat-lbl">En repo</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">Bloques de práctica</div>
+  <div class="blocks-list" id="blocks-list"></div>
+
+  <div class="section-title">Repositorio de errores</div>
+  <div class="repo-btn" onclick="openRepo()">
+    <div class="repo-icon">📌</div>
+    <div class="repo-info">
+      <div class="repo-name">Preguntas falladas</div>
+      <div class="repo-meta">Repasa lo que necesitas mejorar</div>
+    </div>
+    <div class="repo-count" id="repo-count-home">0</div>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-header-row">
+      <button class="quiz-back" onclick="goHome()">← Inicio</button>
+      <span class="quiz-title" id="quiz-block-title"></span>
+      <span class="quiz-score-badge" id="quiz-score-badge">✓ 0</span>
+    </div>
+    <div class="quiz-progress-row">
+      <span class="quiz-prog-text" id="quiz-prog-text">1 / 25</span>
+      <div class="quiz-bar-track"><div class="quiz-bar-fill" id="quiz-bar-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quiz-body">
+    <div class="question-text" id="question-text"></div>
+    <div class="options-list" id="options-list"></div>
+    <div class="explanation" id="explanation">
+      <div class="expl-label">Explicación</div>
+      <div class="expl-text" id="expl-text"></div>
+    </div>
+  </div>
+
+  <div class="quiz-footer">
+    <div class="fail-action" id="fail-action">
+      <div class="fail-result" id="fail-result-text"></div>
+      <button class="mark-fail-btn" id="mark-fail-btn" onclick="toggleMarkFail()">📌 Añadir al repositorio de errores</button>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ══════════ BLOCK COMPLETE ══════════ -->
+<div id="block-complete" class="screen">
+  <div class="bc-emoji" id="bc-emoji">🎉</div>
+  <h2 class="bc-title" id="bc-title">¡Bloque completado!</h2>
+  <p class="bc-sub" id="bc-sub"></p>
+  <div class="bc-score" id="bc-score"></div>
+  <div class="bc-score-label">aciertos en este bloque</div>
+  <div class="bc-btns">
+    <button class="bc-btn bc-btn-primary" onclick="repeatBlock()">🔄 Repetir este bloque</button>
+    <button class="bc-btn bc-btn-secondary" onclick="goHome()">← Volver al inicio</button>
+  </div>
+</div>
+
+<!-- ══════════ REPO ══════════ -->
+<div id="repo" class="screen">
+  <div class="repo-header">
+    <div class="repo-header-left">
+      <button class="repo-back" onclick="goHome()">←</button>
+      <span class="repo-htitle">Repositorio de errores</span>
+    </div>
+    <span class="repo-hbadge" id="repo-hbadge">0</span>
+  </div>
+  <div class="repo-body" id="repo-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATOS: 107 preguntas exactas
+// ═══════════════════════════════════════════════
+const ALL_QUESTIONS = [
+  {q:"¿Qué significan las siglas ERP?",options:["Enterprise Relational Program.","Enterprise Resource Planning.","Execution Resource Planning.","Enterprise Record Program."],correct:"Enterprise Resource Planning.",justification:"Las siglas ERP provienen del inglés 'Enterprise Resource Planning', que se traduce al castellano como Sistema de Planificación de Recursos Empresariales."},
+  {q:"¿Qué tipo de instalación de un ERP es más conveniente para realizar pruebas, entornos de desarrollo o aprendizaje?",options:["SaaS.","Cliente-servidor.","Cliente-servidor web.","Monopuesto."],correct:"Monopuesto.",justification:"En la instalación monopuesto, todo el ERP (base de datos y aplicación) reside en la misma computadora. Es ideal para aprender, pero no sirve para entornos productivos reales con varios empleados."},
+  {q:"¿Cuál es el objetivo principal de un sistema CRM (Customer Relationship Management)?",options:["Gestionar la contabilidad de la empresa.","Mejorar y administrar la relación con los clientes.","Controlar el stock del almacén.","Desarrollar nuevos programas informáticos."],correct:"Mejorar y administrar la relación con los clientes.",justification:"Un CRM es un software que hace referencia a la estrategia de negocios centrada específicamente en el cliente, buscando establecer relaciones duraderas y satisfactorias."},
+  {q:"Si clasificamos el software por su coste, ¿cómo se llama aquel que se puede usar gratis por un tiempo de prueba, pero luego requiere un pago?",options:["Freeware.","Payware.","Shareware.","Software libre."],correct:"Shareware.",justification:"El Shareware es un modelo de distribución donde el software puede usarse sin coste durante un periodo de tiempo. Pasado ese tiempo, para continuar usándolo, se debe realizar un pago al autor."},
+  {q:"En el lenguaje de programación Python, ¿cómo se delimitan los bloques de código (como los bucles o condicionales)?",options:["Con llaves {}.","Mediante el sangrado o indentación (espacios en blanco).","Con las palabras reservadas BEGIN y END.","Con corchetes []."],correct:"Mediante el sangrado o indentación (espacios en blanco).",justification:"En Python no existen llaves para definir bloques explícitos. Los bloques comienzan con dos puntos (:) y todo lo que llevan dentro debe contener una serie de espacios en blanco al inicio de la línea, conocido como sangrado."},
+  {q:"¿Cuál es la mínima unidad de estructura de una base de datos relacional, donde los registros se agrupan en filas y columnas?",options:["Dato.","Vista.","Consulta.","Tabla."],correct:"Tabla.",justification:"La tabla es la unidad estructural fundamental del modelo relacional. Es el conjunto de registros o filas relacionadas que se almacenan bajo un mismo nombre."},
+  {q:"¿En qué lenguaje de programación está desarrollado el servidor del ERP libre Odoo?",options:["Java.","C++.","Python.","PHP."],correct:"Python.",justification:"Odoo presenta una arquitectura basada en cliente-servidor, donde la parte del servidor se desarrolla íntegramente utilizando el lenguaje Python."},
+  {q:"En el lenguaje Python, ¿qué función predefinida se utiliza para mostrar texto o variables por pantalla?",options:["Look().","Out().","Remove().","print()."],correct:"print().",justification:"En Python, la impresión por consola se realiza mediante la función nativa print()."},
+  {q:"En la gestión de productos dentro del ERP, ¿qué tipo de productos SÍ se contabilizan y llevan un control estricto en el stock?",options:["Los consumibles.","Los almacenables.","Los servicios.","Ninguna de las respuestas es correcta."],correct:"Los almacenables.",justification:"A diferencia de los servicios o los consumibles (que se asumen como ilimitados), solo los productos clasificados como 'almacenables' generan un control de inventario real en el sistema."},
+  {q:"¿Qué es exactamente PostgreSQL en el entorno de los sistemas ERP como Odoo?",options:["Es un sistema de código abierto de administración de bases de datos de tipo relacional.","Es un sistema gestor de bases de datos de tipo NO relacional.","Es un lenguaje de programación orientado a objetos.","Es el módulo de compras del ERP."],correct:"Es un sistema de código abierto de administración de bases de datos de tipo relacional.",justification:"PostgreSQL es el SGBD relacional y de código abierto recomendado y utilizado por defecto para dar soporte de datos a Odoo."},
+  {q:"¿Qué paradigma o arquitectura utiliza el ERP Odoo para separar y diferenciar los datos puros de su representación visual por pantalla?",options:["El modelo Vista-Servidor.","El modelo Cliente-Nube.","El MVC (Modelo-Vista-Controlador).","El MVC (Modelo-Vista-Clasificador)."],correct:"El MVC (Modelo-Vista-Controlador).",justification:"El paradigma MVC permite una gran independencia, separando la lógica de los datos (Modelo) de la interfaz gráfica que ve el usuario (Vista) gracias a un gestor intermedio (Controlador)."},
+  {q:"En la logística de un ERP, ¿qué modalidades de albaranes existen para justificar el movimiento de la mercancía?",options:["Solo de entrada.","De entrada y de salida.","Solo externos.","De entrada, de salida y externos (Todas las respuestas son correctas)."],correct:"De entrada, de salida y externos (Todas las respuestas son correctas).",justification:"Los albaranes justifican las recepciones (entrada), envíos a clientes (salida) y los movimientos entre distintos almacenes o ubicaciones propias (externos/internos)."},
+  {q:"A la hora de importar o exportar datos de forma masiva en un sistema ERP-CRM (como Odoo), ¿qué tipo de archivos se utilizan habitualmente?",options:["Archivos flag y tiff.","Archivos txt y blob.","Archivos xml y csv.","Archivos doc y pdf."],correct:"Archivos xml y csv.",justification:"El lenguaje de marcado XML y los archivos separados por comas (CSV) son los formatos estándar más eficientes y compatibles soportados por Python y Odoo para la carga de datos."},
+  {q:"Según la metodología clásica de implantación de un sistema ERP-CRM, ¿de cuántas fases consta el proyecto completo?",options:["Consta de 3 fases.","Consta de 4 fases.","Consta de 5 fases.","Consta de 6 fases."],correct:"Consta de 5 fases.",justification:"Un proyecto organizado se divide en 5 fases estables: Iniciación, Desarrollo, Implementación, Implantación, y finalmente, Producción y soporte."},
+  {q:"En la metodología de implantación, ¿en qué fase se lleva a cabo el análisis detallado y el diseño tanto lógico como físico del sistema?",options:["En la fase de Iniciación.","En la fase de Desarrollo.","En la fase de Implementación.","En la fase de Producción."],correct:"En la fase de Desarrollo.",justification:"Tras el estudio inicial, la Fase 2 (Desarrollo) es donde el equipo técnico diseña la estructura física y lógica sobre papel antes de comprar los equipos o instalar el software."},
+  {q:"En el lenguaje Python, ¿qué función nativa se utiliza para devolver la longitud o el número de elementos que tiene una cadena de texto?",options:["longitud(cadena).","size(cadena).","count(cadena).","len(cadena)."],correct:"len(cadena).",justification:"La función len() (abreviatura de 'length' en inglés) es el comando interno de Python utilizado para devolver la longitud de un determinado objeto, como una cadena o una lista."},
+  {q:"¿Qué módulo específico nos permite crear una orden de compra de forma directa en el ERP?",options:["El módulo de Punto de Venta.","El módulo de Ventas.","El módulo de Compras.","El módulo de Marketing."],correct:"El módulo de Compras.",justification:"Es el módulo logístico específico encargado del aprovisionamiento, permitiendo dar de alta proveedores, solicitar presupuestos y emitir las órdenes directas de compra."},
+  {q:"¿Qué valores permite almacenar una variable de tipo Booleano en el código de Python?",options:["Números del 0 al 10.","Cadenas de texto.","Únicamente True (Verdadero) o False (Falso).","Cualquier número decimal."],correct:"Únicamente True (Verdadero) o False (Falso).",justification:"El tipo de dato booleano es el más conveniente cuando se trabaja con expresiones condicionales, ya que solo permite almacenar los valores lógicos de True o False."},
+  {q:"En el módulo de logística, ¿qué documento del ERP sirve como justificante legal para confirmar la entrega o el movimiento de un producto en el almacén?",options:["La factura.","El asiento contable.","El pedido de venta.","El albarán."],correct:"El albarán.",justification:"Los albaranes son los justificantes que confirman la entrega o recepción de un determinado producto. Pueden ser de entrada, de salida o externos para movimientos entre ubicaciones."},
+  {q:"¿Cuál de las siguientes opciones NO es un objetivo principal al implantar un sistema de gestión empresarial (ERP)?",options:["Compartir información entre los distintos departamentos.","Tener que mantener siempre los mismos proveedores.","Automatizar los procesos internos de la empresa.","Ordenar toda la información en un mismo lugar y base de datos."],correct:"Tener que mantener siempre los mismos proveedores.",justification:"El objetivo de un ERP no es limitar a la empresa a usar siempre los mismos proveedores, sino todo lo contrario: gestionar eficazmente las relaciones con múltiples proveedores, planificar, automatizar procesos y mejorar el control general."},
+  {q:"En el entorno del ERP Odoo, ¿cuál es el nombre técnico del módulo encargado de la Facturación y Contabilidad?",options:["purchase","sale_management","account","contacts"],correct:"account",justification:"En Odoo, el identificador técnico en el código para el módulo de Facturación / Contabilidad es 'account'."},
+  {q:"¿Cuál de los siguientes es un tipo de vista utilizada para mostrar el contenido y los registros organizados en listados por filas?",options:["Vista estructurada.","Vista relacional.","Vista en árbol.","Vista de índice."],correct:"Vista en árbol.",justification:"La 'vista en árbol' es uno de los componentes visuales principales y se utiliza específicamente en los listados de datos para mostrar los registros organizados de forma horizontal en filas."},
+  {q:"¿Cuáles de las siguientes opciones describen las finalidades principales de un SGBD dentro de un ERP?",options:["Extraer y manipular datos.","Almacenar datos de forma segura.","Darle mayor utilidad a la información que se obtiene de las bases de datos.","Todas las respuestas son correctas."],correct:"Todas las respuestas son correctas.",justification:"El SGBD es el motor lógico de un ERP. Se encarga de guardar físicamente la información, gestionarla, extraerla con eficacia y darle una utilidad analítica en las consultas."},
+  {q:"En el lenguaje Python, ¿cuál de las siguientes funciones NO pertenece al tratamiento de cadenas en Python?",options:["capitalize()","splitlines()","multiply()","strip()"],correct:"multiply()",justification:"Python incorpora funciones nativas para cadenas como capitalize(), splitlines() y strip(). La instrucción multiply() no existe como método de cadena predefinido."},
+  {q:"El paradigma de trabajar en la nube (cloud computing) permite al cliente contratar infraestructuras externas. ¿Qué modalidades existen?",options:["SaaS (Software as a Service).","IaaS (Infrastructure as a Service).","PaaS (Platform as a Service).","Todas las respuestas son correctas."],correct:"Todas las respuestas son correctas.",justification:"Estas son las tres modalidades oficiales de servicios en la nube: SaaS deja toda la gestión técnica al proveedor, IaaS alquila el hardware a bajo nivel, y PaaS es un punto intermedio para plataformas."},
+  {q:"¿Cuál de las siguientes acciones NO se puede realizar a través de un panel de vista de búsqueda?",options:["Realizar operaciones complejas de filtrado sobre los registros.","Añadir un panel de búsqueda en la parte superior del listado.","Hacer transferencias bancarias directas.","Agrupar los datos mostrados según un criterio determinado."],correct:"Hacer transferencias bancarias directas.",justification:"La vista de búsqueda es un elemento gráfico destinado exclusivamente a localizar, filtrar y agrupar información. Las transferencias bancarias se realizan en módulos contables en vistas de formulario."},
+  {q:"¿Qué características tiene un ERP?",options:["Modularidad, escalabilidad, oportunidad.","Simplicidad, integración, rigidez.","Integración, modularidad, adaptabilidad.","Ninguna respuesta es correcta."],correct:"Integración, modularidad, adaptabilidad.",justification:"Un ERP engloba toda la actividad, funciona por módulos independientes y se adapta a los requerimientos de la empresa."},
+  {q:"¿Qué palabras se identifican con la lógica operacional de los CRM?",options:["Organizar.","Automatizar.","Gestionar.","Todas las respuestas son correctas."],correct:"Todas las respuestas son correctas.",justification:"La parte operacional del CRM automatiza y gestiona las ventas, el marketing, el soporte técnico y organiza el call center."},
+  {q:"¿Qué tipo de base de datos es la mejor opción para un sistema de gestión de base de datos de un ERP?",options:["Racional.","Relacional.","Multirelacional.","Multidimensional."],correct:"Multidimensional.",justification:"Aunque suelen operar en bases de datos relacionales, las multidimensionales se consideran la 'mejor opción' por su alto rendimiento analítico."},
+  {q:"Módulos mínimos instalados en OpenERP:",options:["base.","web_livechat.","base_setup.","Todas las respuestas son correctas."],correct:"Todas las respuestas son correctas.",justification:"Son los componentes del núcleo que el sistema instala obligatoriamente por defecto."},
+  {q:"En el sistema de instalación _________ se instalan todos los datos y la gestión de estos en un ordenador... instalando una aplicación (cliente) con la que es posible conectarse al ordenador que poseen los datos (servidor).",options:["Cliente-servidor.","Saas.","Monopuesto.","Cliente-servidor Web."],correct:"Cliente-servidor.",justification:"El servidor centraliza la base de datos y los clientes acceden a ella instalando una aplicación de acceso."},
+  {q:"Es posible estructurar el diseño de las bases de datos relacionales en tres niveles diferentes:",options:["Físico y lógico.","Físico, lógico y conceptual.","Físico, lógico o conceptual y externo.","Ninguna de las respuestas es correcta."],correct:"Físico, lógico o conceptual y externo.",justification:"Se estructuran en nivel físico (almacenamiento en disco), lógico o conceptual (tablas y restricciones) y externo (vistas del usuario)."},
+  {q:"La gestión de almacén o stock de productos está basada en dos conceptos fundamentales relacionados entre sí, que son:",options:["Ubicación y almacén.","Albaranes y ubicaciones.","Ubicaciones físicas y virtuales.","Ninguna de las respuestas es correcta."],correct:"Ubicación y almacén.",justification:"El almacén representa el espacio general, mientras que las ubicaciones son los espacios específicos y concretos dentro y fuera de él."},
+  {q:"Para realizar correctamente una devolución, es conveniente diferenciar entre:",options:["Facturas emitidas y facturas pendientes de emitir.","Facturas abonadas y facturas no pagadas.","Facturas emitidas y facturas recibidas.","Todas las respuestas son correctas."],correct:"Facturas abonadas y facturas no pagadas.",justification:"Es fundamental distinguir si la factura ya ha sido abonada (requiere factura rectificativa) o si no está pagada (permite su cancelación en borrador)."},
+  {q:"En el plan de formación de la gestión de compra-venta, ¿cuál es el orden lógico?",options:["Crear orden de compraventa, Crear stock inicial, Crear Categorías de productos.","Crear Categorías de productos, Crear orden de compraventa, Crear stock inicial.","Crear Categorías de productos, Crear productos, Crear stock inicial.","Crear stock inicial, Crear categorías de productos, Crear orden de compraventa."],correct:"Crear Categorías de productos, Crear productos, Crear stock inicial.",justification:"Primero se define la categoría, luego el producto en sí mismo, y finalmente se le asigna un stock para poder operar con él."},
+  {q:"¿Qué tipo de lenguaje es Python?",options:["Lenguaje compilado y multiplataforma.","Lenguaje interpretado y multiplataforma.","Lenguaje compilado.","Lenguaje interpretado."],correct:"Lenguaje interpretado y multiplataforma.",justification:"Python no compila un ejecutable binario directamente; es un lenguaje interpretado que funciona en múltiples sistemas operativos."},
+  {q:"En el lenguaje Python:",options:["Las variables locales tienen un determinado valor a lo largo de todo el programa.","Las variables no necesitan ser definidas (declaradas) para su utilización.","Las variables necesitan ser definidas (declaradas) para su utilización.","Las variables globales solo tienen sentido dentro del bloque en el que se inicialicen."],correct:"Las variables no necesitan ser definidas (declaradas) para su utilización.",justification:"Python usa tipado dinámico, por lo que las variables se inicializan dándoles un valor directamente, sin necesidad de declarar su tipo previamente."},
+  {q:"Dentro del lenguaje Python, ¿qué es el diccionario o tablas hash?",options:["Un conjunto de estructuras que almacenan información mediante clave en lugar de por posición.","Un conjunto de estructuras que NO almacenan información mediante clave en lugar de por posición.","Una representación mediante comillas simples o comillas dobles, pero nunca combinando las dos a la vez.","Ninguna de las respuestas es correcta."],correct:"Un conjunto de estructuras que almacenan información mediante clave en lugar de por posición.",justification:"Los diccionarios en Python usan pares de clave-valor asociativos, en lugar de utilizar un índice posicional como las listas numéricas."},
+  {q:"¿Cuál de estos usaremos para hacer comentarios en Python?",options:["<>","//","!","#"],correct:"#",justification:"El símbolo de la almohadilla (#) se utiliza para invalidar y comentar una línea de código desde ese símbolo hasta el final."},
+  {q:"Señala los tipos de herencia que podemos encontrar en el lenguaje de programación Python (en Odoo).",options:["Herencia por extensión.","Herencia por prototipo.","Herencia por delegación.","Todas son correctas."],correct:"Todas son correctas.",justification:"El ORM de Odoo admite los tres tipos de herencia para extender, copiar o delegar campos a nuevos objetos."},
+  {q:"Permite crear un gráfico de barras o circular partiendo de los campos que se determinen. En este tipo de vista, se pueden realizar agrupaciones sobre los campos...",options:["Vista gráfica.","Vista de búsqueda.","Vista formulario.","Vista en árbol."],correct:"Vista gráfica.",justification:"La vista gráfica posibilita la creación de cuadros analíticos dinámicos como barras y circulares para hacer sumas o cálculos simples sobre grupos."},
+  {q:"¿Cuál es la definición de 'Adaptabilidad'?",options:["Gracias a las características de Modularidad e Integración, un ERP se puede adaptar a las distintas necesidades y requerimientos de una determinada empresa.","Los sistemas ERP abarcan la mayoría de las áreas de una empresa.","Cada módulo permite gestionar un departamento, y se pueden quitar o poner.","Ninguna de las respuestas es correcta."],correct:"Gracias a las características de Modularidad e Integración, un ERP se puede adaptar a las distintas necesidades y requerimientos de una determinada empresa.",justification:"La adaptabilidad es la propiedad que permite que el software se ajuste a las reglas de negocio de la empresa al poseer módulos integrables."},
+  {q:"¿Qué es el SAP Business All-in-One?",options:["Software diseñado para medianas y grandes empresas incorporando una serie de productos básicos y específicos de un determinado sector de una empresa.","Software que se utiliza para gestiones empresariales que estén basadas en aplicaciones online.","Todas las respuestas son incorrectas.","Software que se presenta como una solución muy completa..."],correct:"Software diseñado para medianas y grandes empresas incorporando una serie de productos básicos y específicos de un determinado sector de una empresa.",justification:"Es una solución específica y preconfigurada de SAP orientada a ese segmento concreto del mercado empresarial."},
+  {q:"¿Cuál es el único ERP que tiene su origen en España y que ha conseguido una gran implantación en todo el mundo?",options:["OpenERP.","OpenBravo.","SAP.","ODOO."],correct:"OpenBravo.",justification:"OpenBravo nació en el seno de la Universidad de Navarra en España y ha conseguido una gran implantación mundial."},
+  {q:"Dentro de los CRM, con la lógica analítica es posible:",options:["Automatización de ventas, productos y clientes...","Analizar la información existente para llevar a cabo las diferentes campañas de marketing.","Organización del 'call center'.","Gestión de soporte en la empresa."],correct:"Analizar la información existente para llevar a cabo las diferentes campañas de marketing.",justification:"Mientras la lógica operacional hace las tareas del día a día, la analítica estudia esos datos para modificar y mejorar estrategias."},
+  {q:"Los CRM actuales pueden dividirse en dos categorías, ¿sabes cuáles son?",options:["Integrados e inclusivos.","Integrados en un sistema ERP y exclusivos.","Interconectados e inclusivos.","Exclusivos y interconectados."],correct:"Integrados en un sistema ERP y exclusivos.",justification:"Pueden venir ya integrados como módulos dentro de la suite del propio ERP, o ser desarrollados de forma exclusiva e independiente (como SugarCRM)."},
+  {q:"¿Los CRM que están ________ se refieren a que pertenecen al mismo ERP, por ejemplo: Odoo?",options:["Exclusivos.","Formateados.","Integrados.","Actualizados."],correct:"Integrados.",justification:"Se llaman 'integrados' porque pertenecen y se comunican bajo la misma plataforma del proveedor del ERP."},
+  {q:"Una de las principales funciones de un Data Warehouse es:",options:["Elimina aquellos datos que se utilizan en las operaciones cotidianas del almacén de datos.","Integra los datos de las correspondientes bases de datos distribuidas.","Los Data Warehouse no existen.","Ninguna de las otras respuestas es correcta."],correct:"Integra los datos de las correspondientes bases de datos distribuidas.",justification:"Reúne e integra la información transaccional y la separa de la base de datos operativa diaria para facilitar el análisis estratégico."},
+  {q:"Identifica las funciones que deben realizar las herramientas que permiten controlar y automatizar las necesidades de los Data Warehouse:",options:["Gestión integrada de la extracción, transformación y carga del Data Warehouse.","Manejo de excepciones y archivos logs.","Control en el tiempo de respuesta.","Todas son correctas."],correct:"Todas son correctas.",justification:"Estas herramientas (ETL) controlan el ciclo completo de Extracción, Transformación y Carga, así como sus excepciones."},
+  {q:"Identifica la función INCORRECTA entre estas funciones que deben realizar las herramientas ETL del Data Warehouse:",options:["Control de acceso.","Gestión integrada de la extracción, transformación y carga del Data Warehouse.","Manejo de excepciones y archivos logs.","Control en el tiempo de respuesta."],correct:"Control de acceso.",justification:"El control de acceso es una política de seguridad nativa de la Base de Datos subyacente, no una función directa de las herramientas ETL del Data Warehouse."},
+  {q:"A la hora de elegir un ERP, ¿cuál de los siguientes factores NO debe tenerse en cuenta?",options:["Que proporcione informes y análisis, además de implementar su seguridad.","Que sea lento y difícil de uso.","Que ofrezca soporte a todas las áreas que necesite la empresa.","Todas las respuestas son correctas."],correct:"Que sea lento y difícil de uso.",justification:"Las empresas buscan características exactamente opuestas: rapidez y facilidad de uso y adaptación."},
+  {q:"Cuando se trabaja con software industrial, debe existir un contrato entre el creador y el comprador, denominado licencia. ¿Qué es?",options:["Es un número que facilita el cliente al desarrollador para usar un servicio.","Es un documento que detalla una serie de obligaciones que debe tener el desarrollador con el usuario en cuestión, y viceversa.","Ninguna de las respuestas es correcta.","Un documento que solo impone obligaciones al usuario."],correct:"Es un documento que detalla una serie de obligaciones que debe tener el desarrollador con el usuario en cuestión, y viceversa.",justification:"Es un contrato vinculante bidireccional que establece los derechos, obligaciones, modificación y distribución del código."},
+  {q:"Identifica las licencias de código abierto permisivas:",options:["Apache.","BSD.","MIT.","Todas son correctas."],correct:"Todas son correctas.",justification:"Estas tres son los clásicos ejemplos de licencias libres permisivas (con muy pocas restricciones para el usuario)."},
+  {q:"La gestión de usuarios de un sistema _________ tiene entre las funciones más importantes la creación, mantenimiento y borrado de los distintos usuarios pertenecientes al sistema.",options:["Data Warehouse.","ERP-CRM.","de bases de datos.","Relacional."],correct:"ERP-CRM.",justification:"El administrador del propio ERP es el encargado de dar de alta los perfiles y asignar los permisos a los empleados."},
+  {q:"Los sistemas relacionales deben cumplir una serie de propiedades básicas. Indica cuál es:",options:["Debe ser un sistema capaz de eliminar la redundancia entre sus datos para poder asegurar la coherencia entre todos.","Debe ser un sistema capaz de eliminar sus datos para poder asegurar la coherencia entre todos.","Debe ser un sistema capaz de crear la redundancia entre sus datos.","Ninguna de las respuestas es correcta."],correct:"Debe ser un sistema capaz de eliminar la redundancia entre sus datos para poder asegurar la coherencia entre todos.",justification:"La propiedad de integridad elimina las duplicidades (redundancias) asegurando que no haya datos inconsistentes."},
+  {q:"¿Cuál de las siguientes características NO es una propiedad de un sistema relacional?",options:["Integridad.","Compartición.","Escalaridad.","Seguridad."],correct:"Escalaridad.",justification:"Las propiedades básicas teóricas de un SGBDR son Integridad, Compartición, Seguridad y Protección contra fallos."},
+  {q:"¿Qué permite el nivel lógico o conceptual de una Base de Datos?",options:["Es el encargado del almacenamiento físico en un soporte.","Es un nivel muy utilizado para ficheros.","Permite crear una estructura en los datos mediante tablas y restricciones de integridad, claves primarias, etc.","Ninguna de las respuestas es correcta."],correct:"Permite crear una estructura en los datos mediante tablas y restricciones de integridad, claves primarias, etc.",justification:"El nivel lógico es el plano intermedio donde se define el esquema relacional formal y sus restricciones."},
+  {q:"Unidad mínima de información que puede almacenar un ordenador y que se corresponde con una información; no con un tamaño.",options:["Dato.","Registro.","Byte.","Tabla."],correct:"Dato.",justification:"El 'dato' es la entidad conceptual atómica de almacenamiento de una base de datos de un ERP."},
+  {q:"¿Qué son las consultas?",options:["Son unas órdenes que se pueden utilizar para almacenar información de la base de datos.","Son un conjunto de filas que pueden tener una o varias tablas solicitadas por el usuario, dependiendo de distintos criterios de selección.","Hace referencia a las distintas condiciones para almacenar un campo.","Ninguna de las anteriores."],correct:"Son un conjunto de filas que pueden tener una o varias tablas solicitadas por el usuario, dependiendo de distintos criterios de selección.",justification:"Las consultas filtran y extraen la información específica que pide el usuario proveniente de las tablas cruzadas."},
+  {q:"A la hora de utilizar la herramienta PgAdmin III, ¿qué procedimientos se pueden utilizar?",options:["Informes.","Modificar una base de datos.","Crear consultas y vistas.","Todas son correctas."],correct:"Todas son correctas.",justification:"PgAdmin III funciona como un cliente completo para gestionar integralmente el sistema PostgreSQL."},
+  {q:"En las órdenes de compra, es fundamental que, para poder vender, haya ______ de los distintos productos.",options:["Existencias.","Déficit.","Devoluciones.","Ninguna opción es correcta."],correct:"Existencias.",justification:"Para tramitar salidas (ventas) legalmente en el ERP, debe haber previamente un stock (existencias) registradas."},
+  {q:"Dentro de la gestión de almacén, las __________ se encargan de ajustar los stocks vendidos y los que se compran.",options:["Ubicaciones físicas.","Ubicaciones de socios.","Ubicaciones virtuales.","Todas las opciones son correctas."],correct:"Ubicaciones de socios.",justification:"Representan el espacio lógico y contable que pertenece al cliente o proveedor en el flujo de la mercancía."},
+  {q:"En las devoluciones, ¿en qué caso se podrá eliminar la factura, cancelando de esta manera el albarán y el pedido?",options:["Cuando la factura ya ha sido abonada.","Cuando una factura no está pagada y el pedido se encuentra en estado de 'borrador'.","En todos los casos.","Ninguna respuesta es correcta."],correct:"Cuando una factura no está pagada y el pedido se encuentra en estado de 'borrador'.",justification:"Si no hay un pago asentado y sigue en estado borrador, es posible cancelarla directamente sin documentos rectificativos."},
+  {q:"En la fase 3 de implementación, ¿en qué subfases se divide?",options:["Adquisición del hardware.","Desarrollo de software.","Plan de pruebas.","Todas son correctas."],correct:"Todas son correctas.",justification:"Son todos los procesos preparatorios que blindan al sistema antes del test del usuario."},
+  {q:"¿Cómo se llama el proceso en el que se definen detalladamente las necesidades de formación de cada uno de los colectivos afectados por el proyecto?",options:["Plan de proyecto.","Plan de formación.","Plan de acción.","Plan de información."],correct:"Plan de formación.",justification:"Este plan pertenece a la fase de Implantación para asegurar la adopción correcta por parte de los trabajadores."},
+  {q:"En relación a la Fase 5 (producción y soporte), identifica la respuesta INCORRECTA:",options:["Es en las entrevistas finales cuando se procede a entregar todo el material disponible al cliente.","A partir de este momento, comienza un largo proceso de operación, mantenimiento y soporte.","Las funciones que se llevan a cabo en esta fase NO dependerán del tipo de contrato.","Todas las respuestas son correctas."],correct:"Las funciones que se llevan a cabo en esta fase NO dependerán del tipo de contrato.",justification:"Es falsa porque el mantenimiento evolutivo y correctivo que se otorga depende por completo de las cláusulas del contrato (SLA)."},
+  {q:"La mayoría de implantaciones de sistemas ERP-CRM en una empresa que no llegan a buen fin son casi siempre por una mala _________.",options:["Ejecución.","Mantenimiento.","Organización.","Implementación."],correct:"Organización.",justification:"La falta de un plan metodológico ordenado aboca el proyecto organizativo al fracaso."},
+  {q:"Selecciona la opción correcta con respecto a la arquitectura del servidor en OpenERP:",options:["OpenERP utiliza una estructura jerárquica, permitiendo crear un objeto en cada nivel.","OpenERP utiliza una estructura jerárquica, permitiendo crear un objeto en cada servidor.","OpenERP utiliza una estructura plana, permitiendo crear un objeto en la parte de servidor.","OpenERP utiliza una estructura plana, permitiendo crear un objeto en cada nivel."],correct:"OpenERP utiliza una estructura jerárquica, permitiendo crear un objeto en cada nivel.",justification:"La arquitectura de OpenERP/Odoo es modular y jerárquica, permitiendo a cualquier módulo definir nuevos objetos heredando de osv.osv."},
+  {q:"¿Qué es una vista?",options:["Unidad mínima de información...","Un dato se corresponde con una información...","Componente que sirve para mostrar un conjunto de información perteneciente a diferentes tablas.","Ninguna respuesta es correcta."],correct:"Componente que sirve para mostrar un conjunto de información perteneciente a diferentes tablas.",justification:"Es la pantalla o agrupador visual que extrae datos de tablas dispersas para mostrarlos al usuario."},
+  {q:"Hacen referencia a las distintas pantallas creadas para manejar los diferentes datos, simplificando de esta forma la gestión de la información y normalmente están basados en las vistas:",options:["Informes.","Formularios.","Procedimientos almacenados.","Ninguna de las respuestas es correcta."],correct:"Formularios.",justification:"Los formularios interactivos contienen pestañas y campos para facilitar la inserción/edición."},
+  {q:"¿Para qué sirve la vista de búsqueda en OpenERP?",options:["No existe la vista de búsqueda.","Sirve para complementar a la vista en árbol ya que permite añadir un panel de búsqueda y filtrado en su parte superior.","Sirve para los listados de datos ya que son bastante sencillas.","Ninguna de las anteriores."],correct:"Sirve para complementar a la vista en árbol ya que permite añadir un panel de búsqueda y filtrado en su parte superior.",justification:"Habilita el filtrado de registros masivos listados previamente por el sistema."},
+  {q:"En la creación de un módulo en un sistema ERP-CRM, ¿qué tiene el archivo llamado init_xml (o __init__.py)?",options:["Lista que indica los módulos que deben estar instalados.","Descripción de la categoría y subcategoría del módulo.","Lista de ficheros XML que se van a utilizar cuando se lance el servidor.","Ninguna de las respuestas es correcta."],correct:"Lista de ficheros XML que se van a utilizar cuando se lance el servidor.",justification:"Este fichero es el lanzador que indica a Odoo qué archivos de vistas e información base debe arrancar."},
+  {q:"En relación a la creación de informes personalizados, selecciona la respuesta correcta:",options:["Estos informes pueden incorporar o no estructuras novedosas y utilizan las existentes.","Estos informes incorporan estructuras novedosas, y también utilizan las existentes.","Estos informes NO incorporan estructuras novedosas, solo utilizan las existentes, aumentando de esta forma su eficiencia.","Ninguna de las respuestas es correcta."],correct:"Estos informes NO incorporan estructuras novedosas, solo utilizan las existentes, aumentando de esta forma su eficiencia.",justification:"Un informe es técnicamente una vista apoyada en una consulta SELECT pre-existente para la presentación gráfica o PDF."},
+  {q:"Para crear funciones en Python se usa la palabra clave ______________, seguida del nombre elegido para la función y, entre paréntesis, los parámetros.",options:["def.","fun.","init.","Def."],correct:"def.",justification:"Por ejemplo: def mi_funcion(parametro):"},
+  {q:"Una ventaja de Python es que permite pasar como parámetros a las funciones cualquier tipo de datos.",options:["Verdadero.","Falso."],correct:"Verdadero.",justification:"Al no exigir declaración estricta, la función aceptará el dato y ejecutará los métodos si son compatibles internamente."},
+  {q:"El lenguaje Python, además de ser estructurado, es orientado a objetos. ¿Cuáles son los métodos ya implementados en las clases?",options:["__cmp__(self, otro).","__init__(self, args).","__str__(self).","Todas son correctas."],correct:"Todas son correctas.",justification:"Son métodos mágicos que dotan a la clase de capacidad de comparación, inicialización y representación en texto."},
+  {q:"En cuanto a la adaptación del ERP a una empresa, ¿en qué ámbitos puede darse?",options:["Programando módulos completos que añadan todas las características necesarias.","Modificando y creando nuevos informes adaptándolos a la empresa.","Estableciendo nuevas vistas con información existente en la base de datos (Informes).","Todas las opciones son correctas."],correct:"Todas las opciones son correctas.",justification:"Un ERP de código abierto permite adaptar visualmente sus vistas, reportes, o directamente picar código en su núcleo."},
+  {q:"Tipo de dato Booleano: el tipo booleano define una serie de operandos que pueden ser, entre otros:",options:["Negación de una expresión -> (not).","Igualdad -> (==).","Mayor -> (>).","Todas son correctas."],correct:"Todas son correctas.",justification:"Operadores condicionales y comparativos que resuelven una evaluación en un simple True o False."},
+  {q:"Dentro de los informes de almacén, el ____________ permite comprobar cómo se han repartido los productos por las distintas ubicaciones.",options:["Análisis de movimiento.","Análisis de transporte.","Análisis de inventario.","Análisis de personal."],correct:"Análisis de inventario.",justification:"El análisis de inventario da una fotografía exacta de dónde descansa cada unidad física del stock."},
+  {q:"Las licencias de código abierto determinan que un software no tiene propietario.",options:["Verdadero.","Falso."],correct:"Falso.",justification:"Todo código fuente abierto pertenece a su creador (tiene copyright). Para no tener propietario tendría que ser de 'Dominio Público'."},
+  {q:"¿Cuáles son los dos tipos de licencia robusta que existen?",options:["Fuertes y débiles.","Permisivas y restrictivas.","Abiertas y cerradas.","Comerciales y gratuitas."],correct:"Fuertes y débiles.",justification:"En el contexto del copyleft: Fuerte obliga a que cualquier software derivado sea liberado bajo la misma licencia; Débil permite integración con software privativo."},
+  {q:"No se puede hacer una copia de seguridad de una base de datos.",options:["Verdadero.","Falso."],correct:"Falso.",justification:"Se pueden (y deben) hacer utilizando interfaces gestoras como PgAdmin III en PostgreSQL para resguardar la información."},
+  {q:"¿Qué módulos forman parte del SAP ERP, según el libro?",options:["Distribución y ventas (SD), Contabilidad financiera (FI), Recursos humanos (HR).","CRM, SRM y SCM exclusivamente.","Solo módulos de contabilidad y nóminas.","Únicamente el módulo de fabricación industrial."],correct:"Distribución y ventas (SD), Contabilidad financiera (FI), Recursos humanos (HR).",justification:"El libro destaca: Distribución y ventas (SD), Contabilidad de activos (AA), Gestión de materiales (MM), Planificación de producción (PP), Gestión de almacenes (WM), Gestión de calidad (QM), Contabilidad financiera (FI) y Recursos humanos (HR)."},
+  {q:"¿Qué tipo de Sistema Gestor de Bases de Datos utiliza SAP S/4 HANA?",options:["Un SGBD de tipo relacional clásico en disco.","Un SGBD de tipo 'en memoria' (SAP HANA).","Un SGBD jerárquico tradicional.","Un SGBD multidimensional descentralizado."],correct:"Un SGBD de tipo 'en memoria' (SAP HANA).",justification:"SAP S/4 HANA está optimizado para el SGBD SAP HANA, que es un sistema gestor de bases de datos de tipo 'en memoria', pensado para grandes empresas y para uso en la nube."},
+  {q:"¿Para qué tamaño de empresa está diseñado SAP Business One?",options:["Grandes corporaciones multinacionales.","Empresas exclusivamente del sector público.","Pequeñas y medianas empresas.","Únicamente startups tecnológicas."],correct:"Pequeñas y medianas empresas.",justification:"SAP Business One es un ERP diseñado para pequeñas y medianas empresas, con buena integración con productos Microsoft y soporte para Windows, Mac OS y Linux."},
+  {q:"¿Qué ERP de SAP se basa principalmente en aplicaciones online y es muy intuitivo para pymes?",options:["SAP Business All-in-One.","SAP S/4 HANA.","SAP Business ByDesign.","SAP NetWeaver."],correct:"SAP Business ByDesign.",justification:"SAP Business ByDesign es el ERP de SAP diseñado para pequeñas y medianas empresas, de coste más asequible, muy intuitivo, y utilizado sobre todo para gestiones empresariales basadas en aplicaciones online."},
+  {q:"¿Bajo qué sistema operativo funciona Microsoft Dynamics?",options:["Solo bajo Linux.","Solo bajo macOS.","Solo bajo Windows.","Bajo Windows, Linux y macOS indistintamente."],correct:"Solo bajo Windows.",justification:"Microsoft Dynamics es un ERP propietario que, como era de esperar, solo trabaja bajo el sistema operativo Windows."},
+  {q:"Según el libro, ¿cuál NO es una ventaja de los sistemas ERP?",options:["Se eliminan datos redundantes.","Es costoso, en tiempo y en dinero.","La información empresarial se actualiza en tiempo real.","Existe un control de la actividad empresarial."],correct:"Es costoso, en tiempo y en dinero.",justification:"El coste en tiempo y dinero está listado como una de las principales DESVENTAJAS del ERP, no como ventaja."},
+  {q:"¿Cuál de las siguientes es una desventaja de un sistema ERP?",options:["Consistencia de datos a la hora de tomar decisiones.","Eficiencia empresarial.","Ante un cambio de metodología, puede aparecer desconfianza entre los empleados.","Integración de elementos internos y externos."],correct:"Ante un cambio de metodología, puede aparecer desconfianza entre los empleados.",justification:"El libro recoge entre las desventajas: coste, necesidad de nuevos aprendizajes, dificultades de integración y desconfianza entre los empleados ante cambios metodológicos."},
+  {q:"En el tipo de instalación cliente-servidor web, ¿qué característica diferencial tiene respecto al cliente-servidor clásico?",options:["Usa una interfaz basada en estándares web accesible desde cualquier navegador.","Solo permite acceso desde una terminal física concreta.","No requiere base de datos.","Funciona exclusivamente offline."],correct:"Usa una interfaz basada en estándares web accesible desde cualquier navegador.",justification:"El cliente-servidor web utiliza una interfaz basada en estándares web, permitiendo acceso y gestión desde cualquier navegador instalado en la máquina cliente, sin necesidad de aplicación previa."},
+  {q:"¿Qué datos mínimos se han de introducir para crear un nuevo usuario en el ERP de Odoo, según el libro?",options:["Un nombre y un email.","Un nombre y una clave.","Un nombre, apellidos, un teléfono y un email.","Un nombre, un email y una clave."],correct:"Un nombre y una clave.",justification:"El solucionario oficial del libro indica que los datos mínimos para crear un nuevo usuario en el ERP de Odoo son un nombre y una clave."},
+  {q:"¿Qué construcciones se utilizan en Python para gestionar las excepciones?",options:["if, else, end, return.","do, while, until, break.","try, except, else, finally.","throw, catch, exit, raise."],correct:"try, except, else, finally.",justification:"Las excepciones en Python se gestionan mediante las construcciones try, except, else y finally, equivalentes al try-catch de Java."},
+  {q:"En Python, ¿qué palabra reservada utiliza el usuario para lanzar una excepción manualmente?",options:["throw.","raise.","launch.","trigger."],correct:"raise.",justification:"En cualquier momento el usuario puede lanzar una excepción utilizando la palabra raise junto con algún objeto que herede de Exception."},
+  {q:"¿Cuál de las siguientes NO es una excepción conocida en Python según el libro?",options:["IOError.","KeyError.","IndexError.","DivisionError."],correct:"DivisionError.",justification:"El libro lista: BaseException, Exception, AritmeticError, EOFError, IOError, ImportError, IndexError y KeyError. Los errores de división se gestionan con ZeroDivisionError, no 'DivisionError'."},
+  {q:"Aparte de la almohadilla (#), ¿qué otra forma permite Python para realizar comentarios, sobre todo en varias líneas?",options:["Usar las llaves { }.","Usar las barras inclinadas //.","Usar triples comillas simples.","Usar la etiqueta <comment>."],correct:"Usar triples comillas simples.",justification:"En Python se puede comentar con la almohadilla (#) hasta el final de línea o, con triples comillas simples, que permiten comentarios en varias líneas."},
+  {q:"¿Cuál de las siguientes etiquetas javadoc recomienda el libro para documentar código Python?",options:["@parameter, @result, @creator, @release.","@param, @return, @author, @version.","@input, @output, @owner, @date.","@arg, @ret, @writer, @build."],correct:"@param, @return, @author, @version.",justification:"El libro recomienda usar las etiquetas javadoc estándar: @param, @return, @author y @version."},
+  {q:"¿Cuántos tipos de relaciones diferentes se pueden crear entre objetos en Odoo?",options:["Dos: uno a uno y muchos a muchos.","Tres: uno a uno, uno a muchos y muchos a muchos.","Cuatro: uno a uno, uno a muchos, muchos a uno y muchos a muchos.","Cinco, incluyendo la herencia múltiple."],correct:"Cuatro: uno a uno, uno a muchos, muchos a uno y muchos a muchos.",justification:"El libro indica que en Odoo se pueden diferenciar cuatro tipos de relaciones: uno a uno, uno a muchos, muchos a uno y muchos a muchos."},
+  {q:"¿Qué IDE recomienda el libro para el desarrollo en Python, complementado con un módulo específico?",options:["Visual Studio con la extensión Pylance.","Eclipse complementado con PyDev.","NetBeans con el plugin Anaconda.","IntelliJ IDEA con PyCharm Bundle."],correct:"Eclipse complementado con PyDev.",justification:"El libro indica que se puede desarrollar bajo Eclipse complementado con PyDev, módulo desarrollado para Aptana que permite programar en Python con sangrado de líneas, resaltado y autorrelleno."},
+  {q:"Según el libro, ¿cuál es la implementación de Python más utilizada por ofrecer más estabilidad y madurez?",options:["JPython (escrita en Java).","IronPython (escrita en C#).","CPython (escrita en C).","PyPy (escrita en Python)."],correct:"CPython (escrita en C).",justification:"El libro recoge tres implementaciones (CPython en C, JPython en Java e IronPython en C#) y señala que la más utilizada es la de C, por ofrecer más estabilidad y madurez."},
+  {q:"¿Cuál de los siguientes NO es un tipo de diario contable definido en el libro?",options:["General.","Ventas.","Compras.","Marketing digital."],correct:"Marketing digital.",justification:"El libro distingue como tipos de diarios: General, Ventas, Compras, En efectivo o de caja, Abono de, y Banco y cheques. 'Marketing digital' no aparece como tipo de diario contable."},
+  {q:"¿Qué es un asiento contable en un ERP?",options:["Una factura emitida a un cliente.","Un conjunto de apuntes que permiten representar algún movimiento contable.","Un albarán de salida del almacén.","Un informe de productividad mensual."],correct:"Un conjunto de apuntes que permiten representar algún movimiento contable.",justification:"Un asiento es un conjunto de apuntes que permiten representar algún movimiento contable. Los ERP permiten crearlos de forma manual o automática."},
+  {q:"¿Qué se entiende por 'Plan contable' en el contexto de un ERP?",options:["El calendario fiscal de la empresa.","La estructura jerárquica de las distintas cuentas contables.","Un informe mensual de pérdidas y ganancias.","Una previsión anual de ingresos."],correct:"La estructura jerárquica de las distintas cuentas contables.",justification:"El plan contable es la estructura jerárquica de las distintas cuentas contables. Una vez elaborado, no se suele modificar."},
+  {q:"¿En qué país surgió SugarCRM y qué tecnología usa según el libro?",options:["Alemania, programado en Java.","España, programado en PHP puro.","Estados Unidos, programado en lenguaje LAMP.","India, programado en Ruby on Rails."],correct:"Estados Unidos, programado en lenguaje LAMP.",justification:"SugarCRM surgió en los Estados Unidos. Funciona a través de la web y está programado en el lenguaje LAMP."},
+  {q:"Entre los Data Warehouse actuales mencionados en el libro, ¿cuál es la alternativa de código abierto?",options:["Teradata.","Oracle 12c Database.","Amazon Web Service.","Cloudera."],correct:"Cloudera.",justification:"Teradata, Oracle 12c Database y Amazon Web Service son data warehouse de licencia privativa, mientras que Cloudera es una alternativa de código abierto."},
+  {q:"¿Qué tipo de objeto se utiliza como base para implementar una clase Python que represente un objeto nuevo en Odoo?",options:["base.model.","osv.osv.","odoo.Object.","openerp.Model."],correct:"osv.osv.",justification:"Cuando se crea un objeto nuevo en Odoo, es conveniente implementar una clase que herede del objeto osv.osv para que se reconozcan los elementos del nuevo objeto."},
+  {q:"En la definición de un objeto Odoo, ¿qué propiedad indica el nombre del objeto y es OBLIGATORIA?",options:["_table.","_columns.","_name.","_inherit."],correct:"_name.",justification:"_name indica el nombre del objeto y es un valor obligatorio en la definición de cualquier objeto en Odoo."},
+  {q:"¿Qué dos operadores se distinguen tanto para listas como para diccionarios en Python según el libro?",options:["Operador de suma (+) y operador de resta (-).","Operador de concatenación (+) y operador de repetición (*).","Operador lógico (&&) y operador relacional (==).","Operador de asignación (=) y operador de comparación (!=)."],correct:"Operador de concatenación (+) y operador de repetición (*).",justification:"Para las listas y diccionarios se pueden distinguir dos operadores: operador concatenación (+) y operador de repetición (*)."}
+];
+
+const BLOCK_SIZE = 25;
+const TOTAL = ALL_QUESTIONS.length;
+const NUM_BLOCKS = Math.ceil(TOTAL / BLOCK_SIZE);
+const STORAGE_KEY = 'sge_app_v2';
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let state = loadState();
+let currentBlock = null;
+let currentBlockQuestions = [];
+let currentQIndex = 0;
+let blockScore = 0;
+let answered = false;
+let markedFail = false;
+let preSelected = -1;
+
+function defaultState() {
+  return {
+    blocks: Array.from({length: NUM_BLOCKS}, () => ({
+      completed: false,
+      score: 0,
+      total: 0,
+      answered: 0
+    })),
+    failed: [],       // [{q,options,correct,justification, resolved:false}]
+    totalCorrect: 0,
+    totalAnswered: 0
+  };
+}
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) return JSON.parse(s);
+  } catch(e){}
+  return defaultState();
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// ═══════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════
+function renderHome() {
+  // global bar
+  const pct = TOTAL > 0 ? Math.round(state.totalAnswered / TOTAL * 100) : 0;
+  document.getElementById('global-bar').style.width = pct + '%';
+  document.getElementById('global-done-text').textContent = `${state.totalAnswered} de ${TOTAL} respondidas`;
+  document.getElementById('global-pct-text').textContent = pct + '%';
+  document.getElementById('gs-correct').textContent = state.totalCorrect;
+  document.getElementById('gs-fail').textContent = state.failed.filter(f=>!f.resolved).length;
+  document.getElementById('gs-repo').textContent = state.failed.length;
+  document.getElementById('repo-count-home').textContent = state.failed.filter(f=>!f.resolved).length;
+
+  // blocks
+  const list = document.getElementById('blocks-list');
+  list.innerHTML = '';
+  for (let i = 0; i < NUM_BLOCKS; i++) {
+    const b = state.blocks[i];
+    const start = i * BLOCK_SIZE;
+    const end = Math.min(start + BLOCK_SIZE, TOTAL);
+    const count = end - start;
+    const pctB = count > 0 ? Math.round((b.answered||0) / count * 100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'block-card' + (b.completed ? ' completed' : (b.answered > 0 ? ' active-block' : ''));
+    card.onclick = () => startBlock(i);
+
+    let badge = '';
+    if (b.completed) badge = `<span class="block-badge badge-done">✓ ${b.score}/${b.total}</span>`;
+    else if (b.answered > 0) badge = `<span class="block-badge badge-pct">${pctB}%</span>`;
+    else badge = `<span class="block-badge badge-lock">${count} Qs</span>`;
+
+    card.innerHTML = `
+      <div class="block-num">${i+1}</div>
+      <div class="block-info">
+        <div class="block-name">Bloque ${i+1}</div>
+        <div class="block-meta">Preguntas ${start+1}–${end}</div>
+      </div>
+      ${badge}
+      <div class="block-mini-bar" style="width:${pctB}%"></div>
+    `;
+    list.appendChild(card);
+  }
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  renderHome();
+  show('home');
+}
+
+// ═══════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════
+function startBlock(blockIdx) {
+  currentBlock = blockIdx;
+  const start = blockIdx * BLOCK_SIZE;
+  const end = Math.min(start + BLOCK_SIZE, TOTAL);
+  currentBlockQuestions = ALL_QUESTIONS.slice(start, end).map(q => ({...q, options: [...q.options]}));
+  // shuffle options per question each time
+  currentBlockQuestions.forEach(q => { q.options = shuffle(q.options); });
+  currentQIndex = 0;
+  blockScore = 0;
+  state.blocks[blockIdx].total = currentBlockQuestions.length;
+  state.blocks[blockIdx].answered = 0;
+  state.blocks[blockIdx].completed = false;
+  saveState();
+
+  document.getElementById('quiz-block-title').textContent = `Bloque ${blockIdx+1}`;
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  markedFail = false;
+  preSelected = -1;
+
+  const q = currentBlockQuestions[currentQIndex];
+  const total = currentBlockQuestions.length;
+
+  document.getElementById('quiz-prog-text').textContent = `${currentQIndex+1} / ${total}`;
+  document.getElementById('quiz-bar-fill').style.width = ((currentQIndex+1)/total*100) + '%';
+  document.getElementById('quiz-score-badge').textContent = `✓ ${blockScore}`;
+  document.getElementById('question-text').textContent = q.q;
+
+  const ol = document.getElementById('options-list');
+  ol.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.dataset.idx = i;
+    btn.innerHTML = `<span class="opt-num">${i+1}</span><span class="opt-text">${opt}</span>`;
+    btn.onclick = () => confirmAnswer(opt, q.correct, btn, q);
+    ol.appendChild(btn);
+  });
+
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('fail-action').classList.remove('show');
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('mark-fail-btn').textContent = '📌 Añadir al repositorio de errores';
+  document.getElementById('mark-fail-btn').classList.remove('marked');
+
+  // scroll top
+  document.getElementById('quiz-body').scrollTop = 0;
+}
+
+function confirmAnswer(selected, correct, btnEl, q) {
+  if (answered) return;
+  answered = true;
+
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    b.classList.remove('pre-selected');
+    const txt = b.querySelector('.opt-text').textContent;
+    if (txt === correct) b.classList.add('correct');
+  });
+
+  const isCorrect = selected === correct;
+  if (!isCorrect) {
+    btnEl.classList.add('incorrect');
+    // offer fail marker
+    const fa = document.getElementById('fail-action');
+    fa.classList.add('show');
+    document.getElementById('fail-result-text').textContent = '✗ Respuesta incorrecta';
+    markedFail = false;
+    // auto-add to repo
+    addToRepo(q);
+    document.getElementById('mark-fail-btn').textContent = '📌 Añadido al repositorio ✓';
+    document.getElementById('mark-fail-btn').classList.add('marked');
+    markedFail = true;
+  } else {
+    blockScore++;
+    state.totalCorrect++;
+    const fa = document.getElementById('fail-action');
+    fa.classList.add('show');
+    document.getElementById('fail-result-text').textContent = '✓ ¡Correcto!';
+    document.getElementById('fail-result-text').style.color = 'var(--success)';
+    document.getElementById('mark-fail-btn').textContent = '📌 Añadir al repositorio igualmente';
+  }
+
+  state.totalAnswered++;
+  state.blocks[currentBlock].answered = (state.blocks[currentBlock].answered||0) + 1;
+  saveState();
+
+  document.getElementById('expl-text').textContent = q.justification;
+  document.getElementById('explanation').classList.add('show');
+
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'block';
+  nb.textContent = currentQIndex < currentBlockQuestions.length - 1 ? 'Siguiente →' : 'Ver resultado del bloque';
+}
+
+function toggleMarkFail() {
+  const q = currentBlockQuestions[currentQIndex];
+  if (markedFail) {
+    // remove from repo if last added
+    removeLastFromRepo(q);
+    document.getElementById('mark-fail-btn').textContent = '📌 Añadir al repositorio de errores';
+    document.getElementById('mark-fail-btn').classList.remove('marked');
+    markedFail = false;
+  } else {
+    addToRepo(q);
+    document.getElementById('mark-fail-btn').textContent = '📌 Añadido al repositorio ✓';
+    document.getElementById('mark-fail-btn').classList.add('marked');
+    markedFail = true;
+  }
+  saveState();
+}
+
+function addToRepo(q) {
+  // avoid exact duplicates
+  const exists = state.failed.some(f => f.q === q.q);
+  if (!exists) {
+    state.failed.push({...q, resolved: false});
+    saveState();
+  }
+}
+
+function removeLastFromRepo(q) {
+  const idx = state.failed.findLastIndex ? state.failed.findLastIndex(f => f.q === q.q) : state.failed.map(f=>f.q).lastIndexOf(q.q);
+  if (idx !== -1) state.failed.splice(idx, 1);
+  saveState();
+}
+
+function nextQuestion() {
+  document.getElementById('fail-result-text').style.color = 'var(--danger)';
+  if (currentQIndex < currentBlockQuestions.length - 1) {
+    currentQIndex++;
+    renderQuestion();
+  } else {
+    finishBlock();
+  }
+}
+
+function finishBlock() {
+  const total = currentBlockQuestions.length;
+  state.blocks[currentBlock].completed = true;
+  state.blocks[currentBlock].score = blockScore;
+  state.blocks[currentBlock].total = total;
+  saveState();
+
+  const pct = Math.round(blockScore / total * 100);
+  document.getElementById('bc-emoji').textContent = pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '📚';
+  document.getElementById('bc-title').textContent = pct >= 80 ? '¡Bloque completado!' : pct >= 60 ? '¡Buen trabajo!' : 'Sigue practicando';
+  document.getElementById('bc-sub').textContent = `Bloque ${currentBlock+1} · ${total} preguntas`;
+  document.getElementById('bc-score').textContent = `${blockScore}/${total}`;
+  show('block-complete');
+}
+
+function repeatBlock() {
+  startBlock(currentBlock);
+}
+
+// ═══════════════════════════════════════════════
+// REPO
+// ═══════════════════════════════════════════════
+function openRepo() {
+  renderRepo();
+  show('repo');
+}
+
+function renderRepo() {
+  const active = state.failed.filter(f => !f.resolved);
+  const resolved = state.failed.filter(f => f.resolved);
+  document.getElementById('repo-hbadge').textContent = active.length;
+
+  const body = document.getElementById('repo-body');
+  if (state.failed.length === 0) {
+    body.innerHTML = `<div class="repo-empty"><div class="repo-empty-icon">✨</div><div class="repo-empty-text">¡Sin errores por ahora!<br>Las preguntas que falles<br>aparecerán aquí.</div></div>`;
+    return;
+  }
+
+  let html = '';
+  if (active.length > 0) {
+    html += `<div class="repo-section-label">Por repasar (${active.length})</div><div class="fail-cards" id="fc-active">`;
+    active.forEach((f, i) => {
+      const realIdx = state.failed.indexOf(f);
+      html += failCard(f, realIdx, false);
+    });
+    html += '</div>';
+  }
+  if (resolved.length > 0) {
+    html += `<div class="repo-section-label" style="margin-top:24px">Dominadas (${resolved.length})</div><div class="fail-cards" id="fc-resolved">`;
+    resolved.forEach((f, i) => {
+      const realIdx = state.failed.indexOf(f);
+      html += failCard(f, realIdx, true);
+    });
+    html += '</div>';
+  }
+  html += `<button class="repo-clear-btn" onclick="clearResolved()">🗑 Limpiar dominadas</button>`;
+  body.innerHTML = html;
+}
+
+function failCard(f, idx, isResolved) {
+  return `
+    <div class="fail-card ${isResolved ? 'resolved' : ''}" id="fc-${idx}">
+      <div class="fail-card-num">#${idx+1}</div>
+      <div class="fail-card-q">${f.q}</div>
+      <div class="fail-card-answer">✓ ${f.correct}</div>
+      <div class="fail-card-expl">${f.justification}</div>
+      <div class="fail-card-actions">
+        ${isResolved
+          ? `<button class="fc-btn fc-btn-resolved" onclick="unresolve(${idx})">↩ Mover a repasar</button>`
+          : `<button class="fc-btn fc-btn-resolve" onclick="resolveCard(${idx})">✓ La domino, siguiente</button>`
+        }
+        <button class="fc-btn fc-btn-delete" onclick="deleteCard(${idx})">✕</button>
+      </div>
+    </div>`;
+}
+
+function resolveCard(idx) {
+  state.failed[idx].resolved = true;
+  saveState();
+  renderRepo();
+}
+
+function unresolve(idx) {
+  state.failed[idx].resolved = false;
+  saveState();
+  renderRepo();
+}
+
+function deleteCard(idx) {
+  state.failed.splice(idx, 1);
+  saveState();
+  renderRepo();
+}
+
+function clearResolved() {
+  state.failed = state.failed.filter(f => !f.resolved);
+  saveState();
+  renderRepo();
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// keyboard nav
+document.addEventListener('keydown', e => {
+  if (document.getElementById('quiz').classList.contains('active')) {
+    if (/^[1-4]$/.test(e.key)) {
+      e.preventDefault();
+      const idx = parseInt(e.key) - 1;
+      const btns = document.querySelectorAll('.opt-btn');
+      if (btns[idx] && !answered) {
+        btns.forEach(b => b.classList.remove('pre-selected'));
+        btns[idx].classList.add('pre-selected');
+        preSelected = idx;
+      }
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (answered) return;
+      const btns = document.querySelectorAll('.opt-btn');
+      const delta = e.key === 'ArrowDown' ? 1 : -1;
+      preSelected = (preSelected + delta + btns.length) % btns.length;
+      if (preSelected < 0) preSelected = btns.length - 1;
+      btns.forEach(b => b.classList.remove('pre-selected'));
+      if (btns[preSelected]) btns[preSelected].classList.add('pre-selected');
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!answered && preSelected >= 0) {
+        document.querySelectorAll('.opt-btn')[preSelected]?.click();
+      } else if (answered) {
+        document.getElementById('next-btn').click();
+      }
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+renderHome();
+show('home');
+</script>
+</body>
+</html>
