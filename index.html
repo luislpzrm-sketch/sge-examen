@@ -136,7 +136,8 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var
 
 /* ══════════════ REPO ══════════════ */
 #repo{padding:0;background:var(--bg)}
-.repo-header{padding:16px 16px 14px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+#repo-quiz{padding:0;background:var(--bg)}
+.repo-header{padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 .repo-header-left{display:flex;align-items:center;gap:10px}
 .repo-back{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0}
 .repo-htitle{font-size:16px;font-weight:800}
@@ -145,21 +146,39 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var
 .repo-empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .repo-empty-icon{font-size:48px;margin-bottom:12px}
 .repo-empty-text{font-size:14px;line-height:1.6}
+/* repo tab bar */
+.repo-tabs{display:flex;gap:8px;margin-bottom:18px}
+.repo-tab{flex:1;padding:10px 6px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);text-align:center;transition:all .15s}
+.repo-tab.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+/* sections */
 .repo-section-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 12px}
 .fail-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+/* MODO FICHA (ver respuesta) */
 .fail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative}
-.fail-card.resolved{border-color:rgba(66,199,138,.3);opacity:.6}
-.fail-card-q{font-size:13px;font-weight:700;line-height:1.4;margin-bottom:8px;padding-right:32px}
-.fail-card-answer{font-size:12px;color:var(--success);background:var(--success-dim);padding:4px 10px;border-radius:99px;display:inline-block;margin-bottom:8px}
-.fail-card-expl{font-size:12px;color:var(--muted);line-height:1.5;border-top:1px solid var(--border);padding-top:8px;margin-top:4px}
-.fail-card-actions{display:flex;gap:8px;margin-top:10px}
-.fc-btn{flex:1;padding:9px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s}
+.fail-card.resolved{border-color:rgba(66,199,138,.3);opacity:.55}
+.fail-card-q{font-size:14px;font-weight:700;line-height:1.45;margin-bottom:10px;padding-right:32px}
+.fail-card-answer{font-size:12px;color:var(--success);background:var(--success-dim);padding:5px 12px;border-radius:99px;display:inline-block;margin-bottom:10px;font-weight:700}
+.fail-card-expl{font-size:12px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border);padding-top:8px;margin-top:4px}
+.fail-card-actions{display:flex;gap:8px;margin-top:12px}
+.fc-btn{flex:1;padding:10px 6px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s;text-align:center}
 .fc-btn:active{opacity:.7}
 .fc-btn-resolve{background:var(--success-dim);color:var(--success);border:1px solid rgba(66,199,138,.4)}
-.fc-btn-resolved{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.fc-btn-unresolved{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 .fc-btn-delete{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(224,92,92,.3)}
 .fail-card-num{position:absolute;top:10px;right:12px;font-size:10px;color:var(--muted);font-weight:700}
-.repo-clear-btn{width:100%;padding:13px;background:var(--surface);border:1px solid rgba(224,92,92,.4);border-radius:var(--radius);color:var(--danger);font-size:13px;font-weight:700;cursor:pointer;margin-top:8px}
+.repo-clear-btn{width:100%;padding:13px;background:var(--surface);border:1px solid rgba(224,92,92,.4);border-radius:var(--radius);color:var(--danger);font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
+/* MODO PRÁCTICA (contestar) */
+.rq-header{padding:12px 16px 10px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.rq-prog{font-size:12px;color:var(--muted)}
+.rq-score{font-size:12px;font-weight:700;color:var(--success);background:var(--success-dim);padding:3px 10px;border-radius:99px}
+.rq-body{padding:18px 16px;flex:1;overflow-y:auto}
+.rq-footer{padding:12px 16px;background:var(--surface);border-top:1px solid var(--border)}
+.rq-finish-wrap{text-align:center;padding:50px 20px}
+.rq-finish-emoji{font-size:52px;margin-bottom:14px}
+.rq-finish-title{font-size:24px;font-weight:800;margin-bottom:8px}
+.rq-finish-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.rq-finish-score{font-size:44px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.rq-finish-btns{display:flex;flex-direction:column;gap:10px}
 </style>
 </head>
 <body>
@@ -168,7 +187,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var
 <div id="home" class="screen active">
   <div class="home-label">DAM · SGE</div>
   <h1 class="home-title">Sistemas de Gestión<br><span>Empresarial</span></h1>
-  <p class="home-sub">107 preguntas · Bloques de 25 · Progreso guardado</p>
+  <p class="home-sub">110 preguntas · Bloques de 25 · Progreso guardado</p>
 
   <div class="global-bar-wrap">
     <div class="global-bar-top">
@@ -242,16 +261,39 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var
   </div>
 </div>
 
-<!-- ══════════ REPO ══════════ -->
+<!-- ══════════ REPO: FICHAS ══════════ -->
 <div id="repo" class="screen">
   <div class="repo-header">
     <div class="repo-header-left">
       <button class="repo-back" onclick="goHome()">←</button>
-      <span class="repo-htitle">Repositorio de errores</span>
+      <span class="repo-htitle">Repositorio</span>
     </div>
     <span class="repo-hbadge" id="repo-hbadge">0</span>
   </div>
   <div class="repo-body" id="repo-body"></div>
+</div>
+
+<!-- ══════════ REPO: PRÁCTICA ══════════ -->
+<div id="repo-quiz" class="screen">
+  <div class="rq-header">
+    <button class="repo-back" onclick="openRepo()">← Fichas</button>
+    <span class="rq-prog" id="rq-prog">1 / 0</span>
+    <span class="rq-score" id="rq-score">✓ 0</span>
+  </div>
+  <div class="rq-body" id="rq-body">
+    <div class="question-text" id="rq-question"></div>
+    <div class="options-list" id="rq-options"></div>
+    <div class="explanation" id="rq-explanation">
+      <div class="expl-label">Explicación</div>
+      <div class="expl-text" id="rq-expl-text"></div>
+    </div>
+  </div>
+  <div class="rq-footer">
+    <div class="fail-action" id="rq-fail-action" style="display:none;flex-direction:column;gap:8px;margin-bottom:8px">
+      <div id="rq-fail-result" style="font-size:13px;font-weight:700;text-align:center"></div>
+    </div>
+    <button class="next-btn" id="rq-next-btn" onclick="rqNext()" style="display:none">Siguiente →</button>
+  </div>
 </div>
 
 <script>
@@ -365,13 +407,16 @@ const ALL_QUESTIONS = [
   {q:"Entre los Data Warehouse actuales mencionados en el libro, ¿cuál es la alternativa de código abierto?",options:["Teradata.","Oracle 12c Database.","Amazon Web Service.","Cloudera."],correct:"Cloudera.",justification:"Teradata, Oracle 12c Database y Amazon Web Service son data warehouse de licencia privativa, mientras que Cloudera es una alternativa de código abierto."},
   {q:"¿Qué tipo de objeto se utiliza como base para implementar una clase Python que represente un objeto nuevo en Odoo?",options:["base.model.","osv.osv.","odoo.Object.","openerp.Model."],correct:"osv.osv.",justification:"Cuando se crea un objeto nuevo en Odoo, es conveniente implementar una clase que herede del objeto osv.osv para que se reconozcan los elementos del nuevo objeto."},
   {q:"En la definición de un objeto Odoo, ¿qué propiedad indica el nombre del objeto y es OBLIGATORIA?",options:["_table.","_columns.","_name.","_inherit."],correct:"_name.",justification:"_name indica el nombre del objeto y es un valor obligatorio en la definición de cualquier objeto en Odoo."},
-  {q:"¿Qué dos operadores se distinguen tanto para listas como para diccionarios en Python según el libro?",options:["Operador de suma (+) y operador de resta (-).","Operador de concatenación (+) y operador de repetición (*).","Operador lógico (&&) y operador relacional (==).","Operador de asignación (=) y operador de comparación (!=)."],correct:"Operador de concatenación (+) y operador de repetición (*).",justification:"Para las listas y diccionarios se pueden distinguir dos operadores: operador concatenación (+) y operador de repetición (*)."}
+  {q:"¿Qué dos operadores se distinguen tanto para listas como para diccionarios en Python según el libro?",options:["Operador de suma (+) y operador de resta (-).","Operador de concatenación (+) y operador de repetición (*).","Operador lógico (&&) y operador relacional (==).","Operador de asignación (=) y operador de comparación (!=)."],correct:"Operador de concatenación (+) y operador de repetición (*).",justification:"Para las listas y diccionarios se pueden distinguir dos operadores: operador concatenación (+) y operador de repetición (*)."},
+  {q:"Es bastante común que se produzcan devoluciones en el proceso de compra-venta de productos y servicios. Para realizar este proceso de manera correcta, es conveniente diferenciar entre dos tipos de casos:",options:["Facturas emitidas y facturas recibidas.","Facturas emitidas y facturas pendientes de emitir.","Facturas abonadas y facturas no pagadas.","Todas las respuestas son correctas."],correct:"Facturas abonadas y facturas no pagadas.",justification:"La clave es distinguir si la factura ya fue abonada (requiere factura rectificativa/abono) o si todavía no está pagada (se puede cancelar directamente en estado borrador). No se trata de emitidas vs recibidas, sino del estado de pago."},
+  {q:"¿Cuál de las siguientes herramientas NO corresponde a la automatización de necesidades de los Data Warehouse?",options:["Manejo de excepciones y archivos logs.","Todas son correctas.","Gestión de la transformación, extracción y descarga del Data Warehouse.","Control en el tiempo de respuesta."],correct:"Gestión de la transformación, extracción y descarga del Data Warehouse.",justification:"La opción correcta es 'Gestión de la transformación, extracción y descarga del DW' porque la formulación exacta del libro es 'Gestión integrada de la extracción, transformación y CARGA' (no descarga). El enunciado pregunta cuál NO corresponde: esta opción tiene el término incorrecto ('descarga' en vez de 'carga')."},
+  {q:"¿Cuál de las siguientes NO es una de las principales características de la gestión empresarial?",options:["Orientación al cliente","Obtener el máximo beneficio","Buena gestión de los recursos disponibles","Gestión de almacenes"],correct:"Gestión de almacenes",justification:"Las principales características de la gestión empresarial son: orientación al cliente, obtener el máximo beneficio y buena gestión de los recursos disponibles. La 'gestión de almacenes' es una función operativa concreta (módulo de logística del ERP), no una característica definitoria de la gestión empresarial en su conjunto."}
 ];
 
 const BLOCK_SIZE = 25;
 const TOTAL = ALL_QUESTIONS.length;
 const NUM_BLOCKS = Math.ceil(TOTAL / BLOCK_SIZE);
-const STORAGE_KEY = 'sge_app_v2';
+const STORAGE_KEY = 'sge_app_v3';
 
 // ═══════════════════════════════════════════════
 // STATE
@@ -632,8 +677,10 @@ function repeatBlock() {
 }
 
 // ═══════════════════════════════════════════════
-// REPO
+// REPO — DOS MODOS
 // ═══════════════════════════════════════════════
+let repoActiveTab = 'pending'; // 'pending' | 'resolved'
+
 function openRepo() {
   renderRepo();
   show('repo');
@@ -650,25 +697,37 @@ function renderRepo() {
     return;
   }
 
-  let html = '';
-  if (active.length > 0) {
-    html += `<div class="repo-section-label">Por repasar (${active.length})</div><div class="fail-cards" id="fc-active">`;
-    active.forEach((f, i) => {
+  const showActive = repoActiveTab === 'pending';
+  const list = showActive ? active : resolved;
+
+  let html = `
+    <div class="repo-tabs">
+      <div class="repo-tab ${showActive ? 'active' : ''}" onclick="switchRepoTab('pending')">📌 Por repasar <span style="opacity:.7">(${active.length})</span></div>
+      <div class="repo-tab ${!showActive ? 'active' : ''}" onclick="switchRepoTab('resolved')">✓ Dominadas <span style="opacity:.7">(${resolved.length})</span></div>
+    </div>`;
+
+  if (list.length === 0) {
+    html += `<div class="repo-empty" style="padding:40px 0"><div class="repo-empty-icon">${showActive ? '🎉' : '📭'}</div><div class="repo-empty-text">${showActive ? '¡Sin pendientes!' : 'Aún no has marcado ninguna como dominada.'}</div></div>`;
+  } else {
+    if (showActive) {
+      html += `<button class="bc-btn bc-btn-primary" style="width:100%;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:700;margin-bottom:16px;cursor:pointer;border:none;background:var(--accent);color:#fff" onclick="startRepoQuiz()">🎯 Practicar estas ${active.length} preguntas</button>`;
+    }
+    html += `<div class="fail-cards">`;
+    list.forEach(f => {
       const realIdx = state.failed.indexOf(f);
-      html += failCard(f, realIdx, false);
+      html += failCard(f, realIdx, !showActive);
     });
-    html += '</div>';
+    html += `</div>`;
+    if (!showActive && resolved.length > 0) {
+      html += `<button class="repo-clear-btn" onclick="clearResolved()">🗑 Borrar todas las dominadas</button>`;
+    }
   }
-  if (resolved.length > 0) {
-    html += `<div class="repo-section-label" style="margin-top:24px">Dominadas (${resolved.length})</div><div class="fail-cards" id="fc-resolved">`;
-    resolved.forEach((f, i) => {
-      const realIdx = state.failed.indexOf(f);
-      html += failCard(f, realIdx, true);
-    });
-    html += '</div>';
-  }
-  html += `<button class="repo-clear-btn" onclick="clearResolved()">🗑 Limpiar dominadas</button>`;
   body.innerHTML = html;
+}
+
+function switchRepoTab(tab) {
+  repoActiveTab = tab;
+  renderRepo();
 }
 
 function failCard(f, idx, isResolved) {
@@ -680,8 +739,8 @@ function failCard(f, idx, isResolved) {
       <div class="fail-card-expl">${f.justification}</div>
       <div class="fail-card-actions">
         ${isResolved
-          ? `<button class="fc-btn fc-btn-resolved" onclick="unresolve(${idx})">↩ Mover a repasar</button>`
-          : `<button class="fc-btn fc-btn-resolve" onclick="resolveCard(${idx})">✓ La domino, siguiente</button>`
+          ? `<button class="fc-btn fc-btn-unresolved" onclick="unresolve(${idx})">↩ Volver a repasar</button>`
+          : `<button class="fc-btn fc-btn-resolve" onclick="resolveCard(${idx})">✓ La domino</button>`
         }
         <button class="fc-btn fc-btn-delete" onclick="deleteCard(${idx})">✕</button>
       </div>
@@ -707,9 +766,122 @@ function deleteCard(idx) {
 }
 
 function clearResolved() {
+  if (!confirm('¿Borrar todas las dominadas?')) return;
   state.failed = state.failed.filter(f => !f.resolved);
   saveState();
   renderRepo();
+}
+
+// ── MODO PRÁCTICA REPO ──
+let rqQuestions = [];
+let rqIndex = 0;
+let rqScore = 0;
+let rqAnswered = false;
+let rqPreSelected = -1;
+
+function startRepoQuiz() {
+  rqQuestions = state.failed.filter(f => !f.resolved).map(f => ({...f, options: shuffle([...f.options])}));
+  if (rqQuestions.length === 0) return;
+  rqIndex = 0; rqScore = 0;
+  show('repo-quiz');
+  rqRenderQuestion();
+}
+
+function rqRenderQuestion() {
+  rqAnswered = false; rqPreSelected = -1;
+  const q = rqQuestions[rqIndex];
+  document.getElementById('rq-prog').textContent = `${rqIndex+1} / ${rqQuestions.length}`;
+  document.getElementById('rq-score').textContent = `✓ ${rqScore}`;
+  document.getElementById('rq-question').textContent = q.q;
+
+  const ol = document.getElementById('rq-options');
+  ol.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.dataset.idx = i;
+    btn.innerHTML = `<span class="opt-num">${i+1}</span><span class="opt-text">${opt}</span>`;
+    btn.onclick = () => rqConfirm(opt, q.correct, btn, q);
+    ol.appendChild(btn);
+  });
+
+  document.getElementById('rq-explanation').classList.remove('show');
+  document.getElementById('rq-fail-action').style.display = 'none';
+  document.getElementById('rq-next-btn').style.display = 'none';
+  document.getElementById('rq-body').scrollTop = 0;
+}
+
+function rqConfirm(selected, correct, btnEl, q) {
+  if (rqAnswered) return;
+  rqAnswered = true;
+
+  const btns = document.querySelectorAll('#rq-options .opt-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    b.classList.remove('pre-selected');
+    if (b.querySelector('.opt-text').textContent === correct) b.classList.add('correct');
+  });
+
+  const isOk = selected === correct;
+  if (isOk) { rqScore++; btnEl.classList.add('correct'); } else { btnEl.classList.add('incorrect'); }
+
+  // update resolved state: if correct → offer to mark as dominated
+  const fa = document.getElementById('rq-fail-action');
+  fa.style.display = 'flex';
+  const fr = document.getElementById('rq-fail-result');
+  if (isOk) {
+    fr.style.color = 'var(--success)';
+    fr.textContent = '✓ ¡Correcto!';
+    // find in state.failed and offer to resolve
+    const realIdx = state.failed.findIndex(f => f.q === q.q);
+    if (realIdx !== -1 && !state.failed[realIdx].resolved) {
+      fa.innerHTML += `<button class="mark-fail-btn marked" style="background:var(--success-dim);border:1px solid var(--success);color:var(--success)" onclick="rqMarkDominated(${realIdx}, this)">✓ Marcar como dominada (queda en fichas hasta que la borres)</button>`;
+    }
+  } else {
+    fr.style.color = 'var(--danger)';
+    fr.textContent = '✗ Incorrecto';
+  }
+
+  document.getElementById('rq-expl-text').textContent = q.justification;
+  document.getElementById('rq-explanation').classList.add('show');
+
+  const nb = document.getElementById('rq-next-btn');
+  nb.style.display = 'block';
+  nb.textContent = rqIndex < rqQuestions.length - 1 ? 'Siguiente →' : 'Ver resultado';
+}
+
+function rqMarkDominated(realIdx, btn) {
+  state.failed[realIdx].resolved = true;
+  saveState();
+  btn.textContent = '✓ Marcada como dominada';
+  btn.disabled = true;
+}
+
+function rqNext() {
+  if (rqIndex < rqQuestions.length - 1) {
+    rqIndex++;
+    rqRenderQuestion();
+  } else {
+    rqShowFinish();
+  }
+}
+
+function rqShowFinish() {
+  const pct = Math.round(rqScore / rqQuestions.length * 100);
+  document.getElementById('rq-body').innerHTML = `
+    <div class="rq-finish-wrap">
+      <div class="rq-finish-emoji">${pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '📚'}</div>
+      <h2 class="rq-finish-title">${pct >= 80 ? '¡Muy bien!' : pct >= 60 ? 'Buen trabajo' : 'Sigue practicando'}</h2>
+      <p class="rq-finish-sub">Repositorio · ${rqQuestions.length} preguntas</p>
+      <div class="rq-finish-score">${rqScore}/${rqQuestions.length}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:28px">aciertos</div>
+      <div class="rq-finish-btns">
+        <button class="bc-btn bc-btn-primary" onclick="startRepoQuiz()">🔄 Repetir práctica</button>
+        <button class="bc-btn bc-btn-secondary" onclick="openRepo()">← Volver a fichas</button>
+      </div>
+    </div>`;
+  document.getElementById('rq-fail-action').style.display = 'none';
+  document.getElementById('rq-next-btn').style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════
